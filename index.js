@@ -254,55 +254,57 @@ class FlatDriver {
         }
     }
     static attach(dp, schema) {
-        if (!dp && !schema) {
-            if (this._flatDriverInstance) {
-                return this._flatDriverInstance;
-            }
-            else {
-                throw 'FlatDriver Error: No instance to connect to!';
-            }
-        }
-        else if (this._flatDriverInstance) {
-            return this._flatDriverInstance;
-        }
-        else if (typeof dp === 'string') {
-            this._flatDriverInstance = new FlatDriver(dp);
-            this._flatDriverInstance._attachFile(dp, (parsed) => {
-                if (parsed['SCHEMA']) {
-                    this._flatDriverInstance._schemaEnabled = true;
-                    this._flatDriverInstance._schema = parsed['SCHEMA'];
-                    this._flatDriverInstance._data = parsed['DATA'];
-                    this._flatDriverInstance._idMap = parsed['IDMAP'];
-                }
-                if (!this._flatDriverInstance._schemaEnabled) {
-                    this._flatDriverInstance._data = parsed;
-                }
-                return this._flatDriverInstance;
-            }, (e) => {
-                if (e == 'nofile') {
-                    if (schema != undefined) {
-                        this._flatDriverInstance._createFile(dp, schema, (wf) => {
-                            this._flatDriverInstance._schemaEnabled = true;
-                            this._flatDriverInstance._data = wf['DATA'];
-                            this._flatDriverInstance._schema = wf['SCHEMA'];
-                            this._flatDriverInstance._idMap = wf['IDMAP'];
-                            return this._flatDriverInstance;
-                        }, (err) => {
-                            throw err;
-                        });
-                    }
-                    else {
-                        throw 'FlatDriver Error: ' + dp + ' does not exist! Additionally, there was no schema provided to create a file!';
-                    }
+        return new Promise((resolve, reject) => {
+            if (!dp && !schema) {
+                if (this._flatDriverInstance) {
+                    resolve(this._flatDriverInstance);
                 }
                 else {
-                    throw e;
+                    throw 'FlatDriver Error: No instance to connect to!';
                 }
-            });
-        }
-        else {
-            throw "FlatDriver Attach requires a path to a file!";
-        }
+            }
+            else if (this._flatDriverInstance) {
+                resolve(this._flatDriverInstance);
+            }
+            else if (typeof dp === 'string') {
+                this._flatDriverInstance = new FlatDriver(dp);
+                this._flatDriverInstance._attachFile(dp, (parsed) => {
+                    if (parsed['SCHEMA']) {
+                        this._flatDriverInstance._schemaEnabled = true;
+                        this._flatDriverInstance._schema = parsed['SCHEMA'];
+                        this._flatDriverInstance._data = parsed['DATA'];
+                        this._flatDriverInstance._idMap = parsed['IDMAP'];
+                    }
+                    if (!this._flatDriverInstance._schemaEnabled) {
+                        this._flatDriverInstance._data = parsed;
+                    }
+                    resolve(this._flatDriverInstance);
+                }, (e) => {
+                    if (e == 'nofile') {
+                        if (schema != undefined) {
+                            this._flatDriverInstance._createFile(dp, schema, (wf) => {
+                                this._flatDriverInstance._schemaEnabled = true;
+                                this._flatDriverInstance._data = wf['DATA'];
+                                this._flatDriverInstance._schema = wf['SCHEMA'];
+                                this._flatDriverInstance._idMap = wf['IDMAP'];
+                                resolve(this._flatDriverInstance);
+                            }, (err) => {
+                                throw err;
+                            });
+                        }
+                        else {
+                            throw 'FlatDriver Error: ' + dp + ' does not exist! Additionally, there was no schema provided to create a file!';
+                        }
+                    }
+                    else {
+                        throw e;
+                    }
+                });
+            }
+            else {
+                throw "FlatDriver Attach requires a path to a file!";
+            }
+        });
     }
     static attachSync(dp, schema) {
         if (!dp && !schema) {
