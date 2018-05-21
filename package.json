@@ -1,0 +1,28 @@
+{
+  "name": "flatdriver",
+  "version": "1.0.0",
+  "description": "JSON Database with support for implementing schema's.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc ./src/*.ts --out ./dist/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/quadband/FlatDriver.git"
+  },
+  "keywords": [
+    "JSON",
+    "database"
+  ],
+  "author": "david@siibeon.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/quadband/FlatDriver/issues"
+  },
+  "homepage": "https://github.com/quadband/FlatDriver#readme",
+  "devDependencies": {
+    "@types/node": "^10.1.2",
+    "typescript": "^2.8.3"
+  }
+}
